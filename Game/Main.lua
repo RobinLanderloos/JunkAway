@@ -29,6 +29,7 @@ events:SetScript("OnEvent", function(_, event, arg1)
     if type(JunkAwayDB) ~= "table" then JunkAwayDB = {} end
     ns.db = JunkAwayDB
     ns.db.settings = ns.Settings.Normalize(ns.db.settings)
+    if type(ns.db.ignore) ~= "table" then ns.db.ignore = {} end
     ns.settings = ns.db.settings
   elseif event == "BAG_UPDATE_DELAYED" then
     queueRefresh()

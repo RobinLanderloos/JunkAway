@@ -87,6 +87,21 @@ function Game.Rank()
   })
 end
 
+-- An item's name and link by ID for the Ignored list; "item:<id>" until the
+-- game has its details.
+function Game.ItemName(itemID)
+  local name, link = C_Item.GetItemInfo(itemID)
+  if name then return name, link end
+  if C_Item.RequestLoadItemDataByID then C_Item.RequestLoadItemDataByID(itemID) end
+  Game.waitingForItems = true
+  return "item:" .. itemID, nil
+end
+
+function Game.ItemIcon(itemID)
+  if C_Item.GetItemIconByID then return C_Item.GetItemIconByID(itemID) end
+  return select(10, C_Item.GetItemInfo(itemID))
+end
+
 function Game.Money(copper)
   if C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString then
     return C_CurrencyInfo.GetCoinTextureString(copper)

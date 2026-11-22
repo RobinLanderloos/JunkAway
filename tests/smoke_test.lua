@@ -214,6 +214,29 @@ local scraps = rowFor("Ruined Leather Scraps")
 if scraps then scraps.scripts.OnClick(scraps) end
 check("clicking a row picks the item up", pickedUp[1] == "0:3", pickedUp[1])
 
+-- ---------------------------------------------------------------- 004
+local linen = rowFor("Linen Cloth")
+check("rows have an Ignore button", linen and linen.ignore, texts)
+if linen then linen.ignore.scripts.OnClick(linen.ignore) end
+check("Ignore removes the item from the suggestions", rowFor("Linen Cloth") == nil, shownTexts())
+check("and saves it account-wide", JunkAwayDB.ignore[2589] == true)
+local modeB = find(function(w) return rawget(w, "text") == ns.L.IGNORED and visible(w) end)
+check("an Ignored button shows", modeB ~= nil, shownTexts())
+if modeB then modeB.scripts.OnClick(modeB) end
+local ignoredRow = find(function(w) return rawget(w, "remove") and visible(w) and w.fact and w.fact.itemID == 2589 end)
+check("Ignored mode lists linen", ignoredRow ~= nil, shownTexts())
+if ignoredRow then ignoredRow.remove.scripts.OnClick(ignoredRow.remove) end
+check("Remove un-ignores it", JunkAwayDB.ignore[2589] == nil)
+local backB = find(function(w) return rawget(w, "text") == ns.L.BACK and visible(w) end)
+if backB then backB.scripts.OnClick(backB) end
+check("Back shows linen again", rowFor("Linen Cloth") ~= nil, shownTexts())
+ok, out = slash("ignore " .. link(2589))
+check("/ja ignore <link> ignores", ok and JunkAwayDB.ignore[2589] == true, out)
+ok, out = slash("unignore 2589")
+check("/ja unignore <id> un-ignores", ok and JunkAwayDB.ignore[2589] == nil, out)
+ok, out = slash("ignore Silk")
+check("/ja ignore <name> explains how", ok and out:find(ns.L.NEED_ITEM, 1, true), out)
+
 ok, out = slash("")
 check("/ja again closes the window", ok and not visible(win), out)
 

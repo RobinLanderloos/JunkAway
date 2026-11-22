@@ -26,7 +26,8 @@ end
 
 -- slots: { { bag, slot, itemID, link, count, maxStack, quality, classID,
 --            vendorPrice, bound, family, locked } or { bag, slot, family, empty = true } }
--- opts:  { limit, auctionPrice = function(link, itemID) -> copper per unit or nil }
+-- opts:  { limit, settings = { qualityLimit, warnAt }, ignore = { [itemID] = true },
+--          auctionPrice = function(link, itemID) -> copper per unit or nil }
 -- Returns { candidates = { slot fact + unitValue, value } }
 Ranking.QUEST_CLASS = 12
 Ranking.DEFAULT_QUALITY_LIMIT = 4 -- Epic
@@ -36,6 +37,7 @@ function Ranking.Excluded(fact, opts)
   local settings = opts and opts.settings or {}
   if fact.unknown then return "unknown" end
   if fact.locked then return "locked" end
+  if opts and opts.ignore and opts.ignore[fact.itemID] then return "ignored" end
   if fact.classID == Ranking.QUEST_CLASS then return "quest" end
   local limit = settings.qualityLimit or Ranking.DEFAULT_QUALITY_LIMIT
   if (fact.quality or 0) >= limit then return "quality" end

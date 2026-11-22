@@ -4,7 +4,7 @@
 -- and the shared namespace table as its `...`.
 local ADDON = "JunkAway"
 local ns = {}
-for _, file in ipairs({ "Locales/enUS.lua", "Core/Ranking.lua", "Core/Settings.lua" }) do
+for _, file in ipairs({ "Locales/enUS.lua", "Core/Ranking.lua", "Core/Settings.lua", "Core/IgnoreList.lua" }) do
   assert(loadfile(file))(ADDON, ns)
 end
 
@@ -27,7 +27,7 @@ local function eq(actual, expected, what)
 end
 
 -- Each test file gets the namespace and the helpers: local ns, test, eq = ...
-for _, file in ipairs({ "tests/ranking_test.lua", "tests/settings_test.lua" }) do
+for _, file in ipairs({ "tests/ranking_test.lua", "tests/settings_test.lua", "tests/ignorelist_test.lua" }) do
   assert(loadfile(file))(ns, test, eq)
 end
 
