@@ -1,0 +1,16 @@
+## Interface: 16001
+## Title: JunkAway
+## Notes: When your bags are full, shows which slot is the cheapest to throw away.
+## Version: 0.1.0
+## Author: Robin Landerloos
+## X-License: MIT
+## OptionalDeps: Auctionator
+## SavedVariables: JunkAwayDB
+
+Locales\enUS.lua
+Core\Ranking.lua
+Game\Skin.lua
+Game\Adapter.lua
+Game\Window.lua
+Game\Main.lua
+Game\Slash.lua

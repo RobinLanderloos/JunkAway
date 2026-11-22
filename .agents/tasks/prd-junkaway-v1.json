@@ -1,0 +1,140 @@
+{
+  "userStories": [
+    {
+      "id": "001",
+      "title": "Cheapest slots window (tracer bullet)",
+      "description": "Addon skeleton end to end: .toc, Locales, Core ranking on vendor prices, Game adapter reading the bags, skinned window listing the three cheapest slots (icon, link, count, value), `/junkaway` and `/ja` toggle it, clicking a row picks the item up. Unit tests and smoke test in place.",
+      "status": "open",
+      "markdownFile": "docs/issues/001-cheapest-slots-window-tracer-bullet.md",
+      "acceptanceCriteria": [
+        "Ranking returns slots ordered by value (vendor price x count), cheapest first, top 3, stable on ties",
+        "Empty slots are counted as free and never candidates",
+        "`/ja` opens the window with the three cheapest slots; empty-state text when nothing qualifies",
+        "Row click calls the container pick-up for that bag/slot; hovering a row shows the item tooltip",
+        "Window is skinned, movable, remembers its position, closes with Escape",
+        "`luajit tests/run.lua` and `luajit tests/smoke_test.lua` pass"
+      ],
+      "blockedBy": []
+    },
+    {
+      "id": "002",
+      "title": "Auction prices from Auctionator",
+      "description": "Unit value becomes the higher of vendor price and Auctionator's auction price minus 5%; soulbound items keep vendor price only. Without Auctionator, vendor price alone (ADR 0003).",
+      "status": "open",
+      "markdownFile": "docs/issues/002-auction-prices-from-auctionator.md",
+      "acceptanceCriteria": [
+        "Unit value = max(vendor, floor(auction x 0.95)) for unbound items",
+        "Bound items ignore the auction price",
+        "Adapter uses Auctionator's API only when it is loaded (OptionalDeps)",
+        "Tests cover: auction beats vendor, vendor beats auction, bound, no Auctionator"
+      ],
+      "blockedBy": [
+        "001"
+      ]
+    },
+    {
+      "id": "003",
+      "title": "Never-suggested rules",
+      "description": "Slots without any price, quest items and items at or above the quality limit (setting, default Epic) are never suggested (ADR 0004). Locked slots are skipped too.",
+      "status": "open",
+      "markdownFile": "docs/issues/003-never-suggested-rules.md",
+      "acceptanceCriteria": [
+        "Unpriced items are excluded, not valued at 0",
+        "Quest class (12) excluded even with a vendor price",
+        "Quality >= limit excluded; limit stored in settings and normalized",
+        "Tests cover each rule"
+      ],
+      "blockedBy": [
+        "001"
+      ]
+    },
+    {
+      "id": "004",
+      "title": "Ignore list",
+      "description": "Each row has an Ignore button; ignored item IDs (account-wide) never come up. The window has an Ignored mode listing them with Remove buttons. `/ja ignore <link>` and `/ja unignore <link>`.",
+      "status": "open",
+      "markdownFile": "docs/issues/004-ignore-list.md",
+      "acceptanceCriteria": [
+        "Ignore button removes all stacks of that item ID from the suggestions immediately",
+        "Ignored mode lists ignored items by name with Remove",
+        "Slash ignore/unignore accept item links and IDs",
+        "Ignore list stored in the account-wide saved variables",
+        "Unit tests for IgnoreList and ranking exclusion; smoke test clicks Ignore"
+      ],
+      "blockedBy": [
+        "001"
+      ]
+    },
+    {
+      "id": "005",
+      "title": "Auto-open when bags become full",
+      "description": "Watch bag changes; when the ordinary bags go from not full to full (free ordinary slots <= warnAt, default 0) the window opens once; when they are no longer full an auto-opened window closes. Special bags don't count and their items are never candidates. In combat, opening waits for combat to end (ADR 0005).",
+      "status": "open",
+      "markdownFile": "docs/issues/005-auto-open-when-bags-become-full.md",
+      "acceptanceCriteria": [
+        "Special-bag slots (family ~= 0) excluded from free count and candidates",
+        "Window opens on the not-full -> full transition only",
+        "Auto-opened window closes when a slot frees up",
+        "warnAt setting normalized (0-5)",
+        "In combat the open is deferred to PLAYER_REGEN_ENABLED",
+        "Tests for full/warnAt/special bags; smoke test fires BAG_UPDATE_DELAYED"
+      ],
+      "blockedBy": [
+        "001"
+      ]
+    },
+    {
+      "id": "006",
+      "title": "Stack mark and merge suggestion",
+      "description": "Stackable candidates get their own colour/mark (ADR 0001). When two partial stacks of the same item exist in ordinary bags, a merge row appears above the candidates with a Merge button that moves the smaller stack onto the larger (ADR 0002).",
+      "status": "open",
+      "markdownFile": "docs/issues/006-stack-mark-and-merge-suggestion.md",
+      "acceptanceCriteria": [
+        "Candidates carry `stackable` (max stack > 1) and the row shows the stack mark",
+        "Merge detection: same item ID, both below max stack, ordinary bags, not locked; smaller onto larger",
+        "Merge row label 'Merge <name> (a + b)' and a Merge button doing pick-up + drop",
+        "Tests for merge detection and label"
+      ],
+      "blockedBy": [
+        "001"
+      ]
+    },
+    {
+      "id": "007",
+      "title": "Settings panel and debug report",
+      "description": "A settings page in the AddOns options with the quality limit and warn-at threshold, and `/ja debug` writing slot facts and the ranking into saved variables for reading after /reload.",
+      "status": "open",
+      "markdownFile": "docs/issues/007-settings-panel-and-debug-report.md",
+      "acceptanceCriteria": [
+        "Settings panel registered with the game's Settings UI; `/ja options` opens it",
+        "Changing a setting re-ranks immediately",
+        "`/ja debug` stores a report in JunkAwayDB",
+        "Smoke test opens the panel and runs debug"
+      ],
+      "blockedBy": [
+        "003",
+        "005"
+      ]
+    },
+    {
+      "id": "008",
+      "title": "In-game verification",
+      "description": "The user tries JunkAway in the client: window look, auto-open on full, pick-up from a row, merge button, Ignore, settings. Findings are fixed or recorded in the skill's api-notes.",
+      "status": "open",
+      "markdownFile": "docs/issues/008-in-game-verification.md",
+      "acceptanceCriteria": [
+        "Pick-up from a row works in the live client",
+        "Merge works in the live client",
+        "Auto-open on full seen",
+        "Classic skin approved",
+        "api-notes updated with what was verified"
+      ],
+      "blockedBy": [
+        "002",
+        "004",
+        "006",
+        "007"
+      ]
+    }
+  ]
+}
