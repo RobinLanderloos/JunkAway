@@ -22,5 +22,12 @@ ns.L = {
   MERGE_NOTE = "Frees a slot, nothing lost",
   WHOLE_STACK = "Whole stack of %d",
   STACKABLE = "Stackable",
+  OPTION_QUALITY = "Never suggest this quality or better",
+  OPTION_QUALITY_HELP = "Items of this quality and above never come up, even without a price. Default: Epic.",
+  OPTION_WARN = "Open the window at",
+  OPTION_WARN_HELP = "How many free slots count as full. 0 opens the window only when the bags are really full.",
+  OPTION_WARN_FULL = "Full",
+  OPTION_WARN_FREE = "%d free",
+  OPTION_NOTE = "Items with no vendor or auction price, quest items and ignored items are never suggested. Auction prices come from Auctionator when it is installed.",
   SLASH_HELP = "/ja: show the window. /ja ignore <item>, /ja unignore <item>, /ja options, /ja debug",
 }

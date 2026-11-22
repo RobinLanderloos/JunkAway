@@ -16,4 +16,6 @@ Game\Skin.lua
 Game\Adapter.lua
 Game\Window.lua
 Game\Main.lua
+Game\Report.lua
+Game\Options.lua
 Game\Slash.lua

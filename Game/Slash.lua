@@ -25,6 +25,10 @@ SlashCmdList.JUNKAWAY = function(message)
       ns.Window.Unignore(itemID)
       say(L.NO_LONGER_IGNORED:format(label))
     end
+  elseif command == "options" or command == "config" then
+    ns.OpenOptions()
+  elseif command == "debug" then
+    ns.Report.Debug()
   else
     say(L.SLASH_HELP)
   end

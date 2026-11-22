@@ -147,6 +147,13 @@ _G.C_Item = {
     return n[1], l, n[2], 10, 1, "", "", n[3], "", 134400, n[4], n[5], 0
   end,
 }
+local openedCategory
+_G.Settings = {
+  RegisterCanvasLayoutCategory = function(panel, name) return { panel = panel, name = name, GetID = function() return 77 end } end,
+  RegisterAddOnCategory = function() end,
+  OpenToCategory = function(id) openedCategory = id end,
+}
+_G.ITEM_QUALITY3_DESC, _G.ITEM_QUALITY4_DESC = "Rare", "Epic"
 _G.C_CurrencyInfo = { GetCoinTextureString = function(c) return tostring(c) .. "c" end }
 _G.hooksecurefunc = function() end
 _G.CreateFrame = function(_, name, parent)
@@ -305,6 +312,28 @@ local linenRow = rowFor("Linen Cloth")
 check("a stack candidate says the whole stack goes", linenRow and linenRow.note.text == "Whole stack of 5",
   linenRow and linenRow.note.text)
 slash("")
+
+-- ---------------------------------------------------------------- 007
+ok, out = slash("options")
+check("/ja options opens the settings", ok and openedCategory == 77, out)
+local opt = ns.Options
+check("the settings panel is built", opt ~= nil)
+if opt then
+  opt.panel:Show()
+  check("quality limit shows Epic", opt.quality.value.text == "Epic", opt.quality.value.text)
+  opt.quality.down.scripts.OnClick(opt.quality.down)
+  check("< lowers the quality limit to Rare", JunkAwayDB.settings.qualityLimit == 3 and opt.quality.value.text == "Rare")
+  opt.quality.up.scripts.OnClick(opt.quality.up)
+  check("warn-at shows Full", opt.warn.value.text == ns.L.OPTION_WARN_FULL, opt.warn.value.text)
+  for _ = 1, 9 do opt.warn.up.scripts.OnClick(opt.warn.up) end
+  check("warn-at stops at 5", JunkAwayDB.settings.warnAt == 5, JunkAwayDB.settings.warnAt)
+  for _ = 1, 9 do opt.warn.down.scripts.OnClick(opt.warn.down) end
+end
+ok, out = slash("debug")
+check("/ja debug runs", ok, out)
+local report = JunkAwayDB.report and table.concat(JunkAwayDB.report, " | ") or ""
+check("the report lists slots and the ranking", report:find("Linen Cloth", 1, true) and report:find("candidate 1", 1, true)
+  and report:find("skip: special bag", 1, true) and report:find("unpriced", 1, true), report)
 
 print(failed == 0 and "smoke test passed" or (failed .. " smoke check(s) failed"))
 os.exit(failed == 0 and 0 or 1)
