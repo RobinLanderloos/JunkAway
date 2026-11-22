@@ -30,7 +30,7 @@ local function showTooltip(row)
 end
 
 local function smallButton(parent, text, width)
-  local b = ns.Skin.Button(CreateFrame("Button", nil, parent))
+  local b = ns.Skin.Button(ns.Skin.Create("Button", nil, parent, ns.Skin.TEMPLATES.Button))
   b:SetSize(width or 64, 22)
   b:SetText(text)
   return b
@@ -183,7 +183,7 @@ local function savePosition()
 end
 
 local function build()
-  frame = ns.Skin.Window(CreateFrame("Frame", "JunkAwayWindow", UIParent))
+  frame = ns.Skin.Window(ns.Skin.Create("Frame", "JunkAwayWindow", UIParent, ns.Skin.TEMPLATES.Window))
   frame.TitleText:SetText(L.TITLE)
   frame:SetFrameStrata("HIGH")
   frame:SetToplevel(true)
