@@ -48,3 +48,30 @@ test("equal values keep bag and slot order", function()
   })
   eq(ids(r.candidates), "1,2,3")
 end)
+
+-- ---------------------------------------------------------------- 002 auction prices
+local function auction(prices) return function(_, itemID) return prices[itemID] end end
+
+test("auction price minus the 5% cut beats a lower vendor price", function()
+  local r = Rank({
+    item({ itemID = 1, vendorPrice = 50 }),
+    item({ itemID = 2, vendorPrice = 10 }),   -- auction 100 -> 95
+  }, { auctionPrice = auction({ [2] = 100 }) })
+  eq(ids(r.candidates), "1,2")
+  eq(r.candidates[2].unitValue, 95, "net auction")
+end)
+
+test("vendor price wins when it is higher than the net auction price", function()
+  local r = Rank({ item({ itemID = 1, vendorPrice = 60 }) }, { auctionPrice = auction({ [1] = 50 }) })
+  eq(r.candidates[1].unitValue, 60)
+end)
+
+test("the cut is rounded down to whole copper", function()
+  local r = Rank({ item({ itemID = 1, vendorPrice = 1 }) }, { auctionPrice = auction({ [1] = 33 }) })
+  eq(r.candidates[1].unitValue, 31) -- 31.35
+end)
+
+test("soulbound items ignore the auction price", function()
+  local r = Rank({ item({ itemID = 1, vendorPrice = 5, bound = true }) }, { auctionPrice = auction({ [1] = 1000 }) })
+  eq(r.candidates[1].unitValue, 5)
+end)

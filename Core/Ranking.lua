@@ -7,10 +7,26 @@ local Ranking = {}
 ns.Ranking = Ranking
 
 Ranking.LIMIT = 3
+Ranking.AUCTION_CUT_PERCENT = 5
+
+-- What one unit is worth: the better of vendor price and auction price minus
+-- the auction house cut; bound items can't be auctioned (docs/adr/0003).
+-- nil when neither price is known.
+function Ranking.UnitValue(fact, auctionPrice)
+  local vendor = fact.vendorPrice
+  if vendor and vendor <= 0 then vendor = nil end
+  local net
+  if auctionPrice and not fact.bound then
+    local price = auctionPrice(fact.link, fact.itemID)
+    if price and price > 0 then net = math.floor(price * (100 - Ranking.AUCTION_CUT_PERCENT) / 100) end
+  end
+  if vendor and net then return math.max(vendor, net) end
+  return vendor or net
+end
 
 -- slots: { { bag, slot, itemID, link, count, maxStack, quality, classID,
 --            vendorPrice, bound, family, locked } or { bag, slot, family, empty = true } }
--- opts:  { limit }
+-- opts:  { limit, auctionPrice = function(link, itemID) -> copper per unit or nil }
 -- Returns { candidates = { slot fact + unitValue, value } }
 function Ranking.Rank(slots, opts)
   local limit = opts.limit or Ranking.LIMIT
@@ -19,7 +35,7 @@ function Ranking.Rank(slots, opts)
     if s.empty then
       free = free + 1
     else
-      local unit = s.vendorPrice or 0
+      local unit = Ranking.UnitValue(s, opts.auctionPrice) or 0
       local c = {}
       for k, v in pairs(s) do c[k] = v end
       c.unitValue = unit

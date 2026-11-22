@@ -216,5 +216,16 @@ check("clicking a row picks the item up", pickedUp[1] == "0:3", pickedUp[1])
 ok, out = slash("")
 check("/ja again closes the window", ok and not visible(win), out)
 
+-- ---------------------------------------------------------------- 002
+_G.Auctionator = { API = { v1 = {
+  GetAuctionPriceByItemLink = function(_, l) if itemID(l) == 2934 then return 1000 end end,
+  GetAuctionPriceByItemID = function() return nil end,
+} } }
+slash("")
+check("Auctionator's price counts: scraps (now 2 x 950c) drop out, linen (65c) moves in",
+  rowFor("Ruined Leather Scraps") == nil and rowFor("Linen Cloth") ~= nil, shownTexts())
+slash("")
+_G.Auctionator = nil
+
 print(failed == 0 and "smoke test passed" or (failed .. " smoke check(s) failed"))
 os.exit(failed == 0 and 0 or 1)
