@@ -11,6 +11,7 @@ Locales\enUS.lua
 Core\Ranking.lua
 Core\Settings.lua
 Core\IgnoreList.lua
+Core\Display.lua
 Game\Skin.lua
 Game\Adapter.lua
 Game\Window.lua

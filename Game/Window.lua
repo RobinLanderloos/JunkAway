@@ -55,7 +55,11 @@ local function makeRow(index)
   local ignore = smallButton(row, L.IGNORE)
   ignore:SetPoint("RIGHT", -4, 0)
   ignore:SetScript("OnClick", function()
-    if row.fact and row.fact.itemID then Window.Ignore(row.fact.itemID) end
+    if row.merge then
+      Window.Merge(row.merge)
+    elseif row.fact and row.fact.itemID then
+      Window.Ignore(row.fact.itemID)
+    end
   end)
   row.ignore = ignore
 
@@ -78,6 +82,7 @@ local function makeRow(index)
 
   row:SetScript("OnClick", function(self)
     local f = self.fact
+    if self.merge then return end
     if f and C_Container and C_Container.PickupContainerItem then
       C_Container.PickupContainerItem(f.bag, f.slot)
     end
@@ -87,13 +92,33 @@ local function makeRow(index)
   return row
 end
 
+-- Stackable candidates get their own colour (docs/adr/0001).
+local STACK_COLOR = { 1, 0.55, 0.2 }
+local MERGE_COLOR = { 0.4, 0.85, 0.4 }
+
 local function fillRow(row, fact)
+  row.merge = nil
   row.fact = fact
   row.icon:SetTexture(fact.icon)
   row.count:SetText((fact.count or 1) > 1 and tostring(fact.count) or "")
   row.label:SetText(fact.link or fact.name or ("item:" .. tostring(fact.itemID)))
   row.value:SetText(ns.Game.Money(fact.value))
-  row.note:SetText("")
+  row.note:SetText(ns.Display.StackNote(fact))
+  row.note:SetTextColor(STACK_COLOR[1], STACK_COLOR[2], STACK_COLOR[3])
+  row.ignore:SetText(L.IGNORE)
+  row:Show()
+end
+
+local function fillMergeRow(row, merge)
+  row.fact = merge.from
+  row.merge = merge
+  row.icon:SetTexture(merge.from.icon)
+  row.count:SetText("")
+  row.label:SetText(ns.Display.MergeLabel(merge))
+  row.value:SetText("")
+  row.note:SetText(L.MERGE_NOTE)
+  row.note:SetTextColor(MERGE_COLOR[1], MERGE_COLOR[2], MERGE_COLOR[3])
+  row.ignore:SetText(L.MERGE)
   row:Show()
 end
 
@@ -235,12 +260,24 @@ local function refreshSuggestions(r)
   r = r or ns.Game.Rank()
   Window.last = r
   info:SetText(L.FREE_SLOTS:format(r.freeSlots or 0))
-  for i, row in ipairs(rows) do
-    local c = r.candidates[i]
-    if c then fillRow(row, c) else row.fact = nil; row:Hide() end
+  local first = 1
+  local merge = r.merges and r.merges[1]
+  if merge then
+    fillMergeRow(rows[1], merge)
+    first = 2
+  end
+  for i = first, #rows do
+    local row = rows[i]
+    local c = r.candidates[i - first + 1]
+    if c and i - first + 1 <= ns.Ranking.LIMIT then
+      fillRow(row, c)
+    else
+      row.fact, row.merge = nil, nil
+      row:Hide()
+    end
   end
   empty:SetText(L.NOTHING)
-  empty:SetShown(#r.candidates == 0)
+  empty:SetShown(#r.candidates == 0 and not merge)
   hint:SetText(L.PICK_UP_HINT)
 end
 
@@ -249,9 +286,18 @@ function Window.Refresh(r)
   if not frame or not frame:IsShown() then return end
   local ignored = mode == "ignored"
   modeButton:SetText(ignored and L.BACK or L.IGNORED)
-  for _, row in ipairs(rows) do if ignored then row.fact = nil; row:Hide() end end
+  for _, row in ipairs(rows) do if ignored then row.fact, row.merge = nil, nil; row:Hide() end end
   for _, row in ipairs(ignoredRows) do if not ignored then row.fact = nil; row:Hide() end end
   if ignored then refreshIgnored() else refreshSuggestions(r) end
+end
+
+-- Moves the smaller stack onto the larger one: two pick-ups, as a player
+-- would do by hand (docs/adr/0002, 0006). Nothing happens while the cursor
+-- holds something.
+function Window.Merge(merge)
+  if CursorHasItem and CursorHasItem() then return end
+  C_Container.PickupContainerItem(merge.from.bag, merge.from.slot)
+  C_Container.PickupContainerItem(merge.to.bag, merge.to.slot)
 end
 
 function Window.Ignore(itemID)

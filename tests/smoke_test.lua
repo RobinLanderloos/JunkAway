@@ -200,7 +200,7 @@ local function slash(message)
 end
 
 local function rowFor(name)
-  return find(function(w) return rawget(w, "fact") and visible(w) and rawget(w, "fact").name == name end)
+  return find(function(w) return rawget(w, "fact") and not rawget(w, "merge") and visible(w) and rawget(w, "fact").name == name end)
 end
 
 -- ---------------------------------------------------------------- 001
@@ -288,6 +288,22 @@ fire("BAG_UPDATE_DELAYED"); runTimers()
 containers[0][16] = nil
 fire("BAG_UPDATE_DELAYED"); runTimers()
 check("a window opened with /ja stays open when room frees up", visible(win))
+slash("")
+
+-- ---------------------------------------------------------------- 006
+slash("")
+local mergeRow = find(function(w) return rawget(w, "merge") and visible(w) end)
+check("partial Silk stacks give a merge row", mergeRow and mergeRow.label.text == "Merge Silk Cloth (1 + 1)",
+  shownTexts())
+pickedUp = {}
+_G.C_Container.PickupContainerItem = function(bag, slot) pickedUp[#pickedUp + 1] = bag .. ":" .. slot end
+if mergeRow then mergeRow.ignore.scripts.OnClick(mergeRow.ignore) end
+check("Merge picks up one stack and drops it on the other", pickedUp[1] == "0:4" and pickedUp[2] == "0:15",
+  table.concat(pickedUp, " "))
+check("Merge doesn't ignore anything", next(JunkAwayDB.ignore) == nil)
+local linenRow = rowFor("Linen Cloth")
+check("a stack candidate says the whole stack goes", linenRow and linenRow.note.text == "Whole stack of 5",
+  linenRow and linenRow.note.text)
 slash("")
 
 print(failed == 0 and "smoke test passed" or (failed .. " smoke check(s) failed"))

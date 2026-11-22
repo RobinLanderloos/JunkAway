@@ -129,3 +129,65 @@ test("special bags neither count as room nor give candidates", function()
   eq(r.freeSlots, 0, "quiver slot isn't room")
   eq(r.full, true)
 end)
+
+-- ---------------------------------------------------------------- 006 stacks and merges
+test("candidates of stackable items are marked", function()
+  local r = Rank({ item({ itemID = 1, vendorPrice = 1, maxStack = 20, count = 3 }), item({ itemID = 2, vendorPrice = 9 }) })
+  eq(r.candidates[1].stackable, true, "cloth")
+  eq(r.candidates[2].stackable, false, "sword")
+end)
+
+test("two partial stacks of one item give a merge: smaller onto larger", function()
+  local r = Rank({
+    item({ itemID = 2589, vendorPrice = 1, maxStack = 20, count = 15, bag = 0, slot = 1 }),
+    item({ itemID = 2589, vendorPrice = 1, maxStack = 20, count = 5, bag = 2, slot = 4 }),
+    item({ itemID = 2589, vendorPrice = 1, maxStack = 20, count = 20, bag = 2, slot = 5 }), -- full stack
+  })
+  eq(#r.merges, 1, "one merge")
+  local m = r.merges[1]
+  eq(m.itemID, 2589)
+  eq(m.from.bag .. ":" .. m.from.slot, "2:4", "from the smaller")
+  eq(m.to.bag .. ":" .. m.to.slot, "0:1", "onto the larger")
+end)
+
+test("no merge when the two stacks don't fit in one (15 + 12 of 20)", function()
+  local r = Rank({
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 15 }),
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 12 }),
+  })
+  eq(#r.merges, 0)
+end)
+
+test("the smallest stack goes onto the largest one it still fits on", function()
+  local r = Rank({
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 4 }),
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 18 }),
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 10 }),
+  })
+  eq(r.merges[1].from.count, 4, "smallest")
+  eq(r.merges[1].to.count, 10, "18 + 4 would overflow")
+end)
+
+test("no merge for full stacks, special bags, locked or ignored items", function()
+  local function pair(fields)
+    local a = item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 5 })
+    local b = item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 5 })
+    for k, v in pairs(fields) do b[k] = v end
+    return { a, b }
+  end
+  eq(#Rank(pair({ count = 20 })).merges, 0, "full stack")
+  eq(#Rank(pair({ family = 4 })).merges, 0, "special bag")
+  eq(#Rank(pair({ locked = true })).merges, 0, "locked")
+  eq(#Rank(pair({}), { ignore = { [7] = true } }).merges, 1, "ignored items still merge: no loss")
+end)
+
+test("only one merge per item even with three partial stacks", function()
+  local r = Rank({
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 2 }),
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 3 }),
+    item({ itemID = 7, vendorPrice = 1, maxStack = 20, count = 4 }),
+  })
+  eq(#r.merges, 1)
+  eq(r.merges[1].from.count, 2, "smallest")
+  eq(r.merges[1].to.count, 4, "largest")
+end)

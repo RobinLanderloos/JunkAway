@@ -17,5 +17,10 @@ ns.L = {
   NOW_IGNORED = "%s will no longer be suggested.",
   NO_LONGER_IGNORED = "%s can be suggested again.",
   NEED_ITEM = "Shift-click an item or type its item ID, e.g. /ja ignore 4306.",
+  MERGE_LABEL = "Merge %s (%d + %d)",
+  MERGE = "Merge",
+  MERGE_NOTE = "Frees a slot, nothing lost",
+  WHOLE_STACK = "Whole stack of %d",
+  STACKABLE = "Stackable",
   SLASH_HELP = "/ja: show the window. /ja ignore <item>, /ja unignore <item>, /ja options, /ja debug",
 }
