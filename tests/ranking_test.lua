@@ -106,3 +106,26 @@ test("locked slots and items whose details aren't loaded are skipped", function(
   eq(ids(r.candidates), "3")
   eq(r.freeSlots, 0, "they still fill their slot")
 end)
+
+-- ---------------------------------------------------------------- 005 full
+test("bags are full when no ordinary slot is free", function()
+  eq(Rank({ item({ itemID = 1, vendorPrice = 1 }) }).full, true, "full")
+  eq(Rank({ item({ itemID = 1, vendorPrice = 1 }), empty() }).full, false, "one free")
+end)
+
+test("warnAt counts a few free slots as full", function()
+  local slots = { item({ itemID = 1, vendorPrice = 1 }), empty(), empty() }
+  eq(Rank(slots, { settings = { warnAt = 2 } }).full, true, "2 free, warn at 2")
+  eq(Rank(slots, { settings = { warnAt = 1 } }).full, false, "2 free, warn at 1")
+end)
+
+test("special bags neither count as room nor give candidates", function()
+  local r = Rank({
+    item({ itemID = 1, vendorPrice = 50 }),
+    item({ itemID = 2512, vendorPrice = 1, count = 200, maxStack = 200, family = 1, bag = 1 }), -- arrows in a quiver
+    empty({ family = 1, bag = 1 }),
+  })
+  eq(ids(r.candidates), "1")
+  eq(r.freeSlots, 0, "quiver slot isn't room")
+  eq(r.full, true)
+end)

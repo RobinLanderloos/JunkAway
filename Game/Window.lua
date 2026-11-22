@@ -231,8 +231,8 @@ local function build()
   frame:SetSize(WIDTH, TOP + CONTENT_H + 34)
 end
 
-local function refreshSuggestions()
-  local r = ns.Game.Rank()
+local function refreshSuggestions(r)
+  r = r or ns.Game.Rank()
   Window.last = r
   info:SetText(L.FREE_SLOTS:format(r.freeSlots or 0))
   for i, row in ipairs(rows) do
@@ -244,13 +244,14 @@ local function refreshSuggestions()
   hint:SetText(L.PICK_UP_HINT)
 end
 
-function Window.Refresh()
+-- r: a ranking just made by the caller, or nil to rank now.
+function Window.Refresh(r)
   if not frame or not frame:IsShown() then return end
   local ignored = mode == "ignored"
   modeButton:SetText(ignored and L.BACK or L.IGNORED)
   for _, row in ipairs(rows) do if ignored then row.fact = nil; row:Hide() end end
   for _, row in ipairs(ignoredRows) do if not ignored then row.fact = nil; row:Hide() end end
-  if ignored then refreshIgnored() else refreshSuggestions() end
+  if ignored then refreshIgnored() else refreshSuggestions(r) end
 end
 
 function Window.Ignore(itemID)

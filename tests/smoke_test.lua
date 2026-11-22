@@ -251,5 +251,44 @@ check("Auctionator's price counts (scraps now 2 x 950c)", scrapsRow and scrapsRo
 slash("")
 _G.Auctionator = nil
 
+-- ---------------------------------------------------------------- 005
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("the window stays shut while there is room", not visible(win))
+local function fillBackpack(except)
+  for i = 1, 16 do
+    if not containers[0][i] and i ~= except then containers[0][i] = { 4306, 1 } end
+  end
+end
+fillBackpack(16)
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("one free slot left: still shut (warn at 0)", not visible(win))
+containers[0][16] = { 4306, 1 }
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("the window opens when the bags become full", visible(win))
+check("the quiver's arrows are never listed", rowFor("Rough Arrow") == nil, shownTexts())
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("still open on the next bag change", visible(win))
+containers[0][16] = nil
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("an auto-opened window closes when a slot frees up", not visible(win))
+
+inCombat = true
+containers[0][16] = { 4306, 1 }
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("in combat it waits", not visible(win))
+inCombat = false
+fire("PLAYER_REGEN_ENABLED"); runTimers()
+check("and opens when combat ends", visible(win))
+
+containers[0][16] = nil
+fire("BAG_UPDATE_DELAYED"); runTimers()
+slash("")
+containers[0][16] = { 4306, 1 }
+fire("BAG_UPDATE_DELAYED"); runTimers()
+containers[0][16] = nil
+fire("BAG_UPDATE_DELAYED"); runTimers()
+check("a window opened with /ja stays open when room frees up", visible(win))
+slash("")
+
 print(failed == 0 and "smoke test passed" or (failed .. " smoke check(s) failed"))
 os.exit(failed == 0 and 0 or 1)

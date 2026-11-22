@@ -28,7 +28,7 @@ end
 --            vendorPrice, bound, family, locked } or { bag, slot, family, empty = true } }
 -- opts:  { limit, settings = { qualityLimit, warnAt }, ignore = { [itemID] = true },
 --          auctionPrice = function(link, itemID) -> copper per unit or nil }
--- Returns { candidates = { slot fact + unitValue, value } }
+-- Returns { candidates = { slot fact + unitValue, value }, freeSlots, full }
 Ranking.QUEST_CLASS = 12
 Ranking.DEFAULT_QUALITY_LIMIT = 4 -- Epic
 
@@ -46,9 +46,12 @@ end
 
 function Ranking.Rank(slots, opts)
   local limit = opts.limit or Ranking.LIMIT
+  local settings = opts.settings or {}
   local all, free = {}, 0
   for _, s in ipairs(slots) do
-    if s.empty then
+    if (s.family or 0) ~= 0 then
+      -- special bag (quiver, soul bag, herb bag): not room, not a candidate (docs/adr/0005)
+    elseif s.empty then
       free = free + 1
     elseif not Ranking.Excluded(s, opts) then
       local unit = Ranking.UnitValue(s, opts.auctionPrice)
@@ -69,5 +72,9 @@ function Ranking.Rank(slots, opts)
 
   local candidates = {}
   for i = 1, math.min(limit, #all) do candidates[i] = all[i] end
-  return { candidates = candidates, freeSlots = free }
+  return {
+    candidates = candidates,
+    freeSlots = free,
+    full = free <= (settings.warnAt or 0),
+  }
 end
