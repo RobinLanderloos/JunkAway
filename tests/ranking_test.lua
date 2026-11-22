@@ -75,3 +75,34 @@ test("soulbound items ignore the auction price", function()
   local r = Rank({ item({ itemID = 1, vendorPrice = 5, bound = true }) }, { auctionPrice = auction({ [1] = 1000 }) })
   eq(r.candidates[1].unitValue, 5)
 end)
+
+-- ---------------------------------------------------------------- 003 never suggested
+test("an item with no price at all is never suggested (Hearthstone)", function()
+  local r = Rank({ item({ itemID = 6948, vendorPrice = 0, bound = true }), item({ itemID = 2, vendorPrice = 40 }) })
+  eq(ids(r.candidates), "2")
+end)
+
+test("quest items are never suggested, even with a vendor price", function()
+  local r = Rank({ item({ itemID = 1, classID = 12, vendorPrice = 1 }), item({ itemID = 2, vendorPrice = 40 }) })
+  eq(ids(r.candidates), "2")
+end)
+
+test("items at or above the quality limit are never suggested (default Epic)", function()
+  local slots = {
+    item({ itemID = 1, quality = 4, vendorPrice = 1 }),
+    item({ itemID = 2, quality = 3, vendorPrice = 2 }),
+    item({ itemID = 3, quality = 0, vendorPrice = 3 }),
+  }
+  eq(ids(Rank(slots).candidates), "2,3", "default")
+  eq(ids(Rank(slots, { settings = { qualityLimit = 3 } }).candidates), "3", "limit Rare")
+end)
+
+test("locked slots and items whose details aren't loaded are skipped", function()
+  local r = Rank({
+    item({ itemID = 1, vendorPrice = 1, locked = true }),
+    item({ itemID = 2, unknown = true }),
+    item({ itemID = 3, vendorPrice = 9 }),
+  })
+  eq(ids(r.candidates), "3")
+  eq(r.freeSlots, 0, "they still fill their slot")
+end)

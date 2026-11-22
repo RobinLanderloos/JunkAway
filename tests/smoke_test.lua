@@ -209,6 +209,7 @@ local win = _G.JunkAwayWindow
 check("/ja opens the window", ok and win and visible(win), out)
 local texts = shownTexts()
 check("cheapest slot (scraps, 6c) is listed", rowFor("Ruined Leather Scraps") ~= nil, texts)
+check("the Hearthstone (no price) is never listed", rowFor("Hearthstone") == nil, texts)
 local scraps = rowFor("Ruined Leather Scraps")
 if scraps then scraps.scripts.OnClick(scraps) end
 check("clicking a row picks the item up", pickedUp[1] == "0:3", pickedUp[1])
@@ -222,8 +223,8 @@ _G.Auctionator = { API = { v1 = {
   GetAuctionPriceByItemID = function() return nil end,
 } } }
 slash("")
-check("Auctionator's price counts: scraps (now 2 x 950c) drop out, linen (65c) moves in",
-  rowFor("Ruined Leather Scraps") == nil and rowFor("Linen Cloth") ~= nil, shownTexts())
+local scrapsRow = rowFor("Ruined Leather Scraps")
+check("Auctionator's price counts (scraps now 2 x 950c)", scrapsRow and scrapsRow.fact.value == 1900, shownTexts())
 slash("")
 _G.Auctionator = nil
 

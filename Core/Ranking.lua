@@ -28,19 +28,35 @@ end
 --            vendorPrice, bound, family, locked } or { bag, slot, family, empty = true } }
 -- opts:  { limit, auctionPrice = function(link, itemID) -> copper per unit or nil }
 -- Returns { candidates = { slot fact + unitValue, value } }
+Ranking.QUEST_CLASS = 12
+Ranking.DEFAULT_QUALITY_LIMIT = 4 -- Epic
+
+-- Why a filled slot is never suggested (docs/adr/0004), or nil.
+function Ranking.Excluded(fact, opts)
+  local settings = opts and opts.settings or {}
+  if fact.unknown then return "unknown" end
+  if fact.locked then return "locked" end
+  if fact.classID == Ranking.QUEST_CLASS then return "quest" end
+  local limit = settings.qualityLimit or Ranking.DEFAULT_QUALITY_LIMIT
+  if (fact.quality or 0) >= limit then return "quality" end
+  return nil
+end
+
 function Ranking.Rank(slots, opts)
   local limit = opts.limit or Ranking.LIMIT
   local all, free = {}, 0
   for _, s in ipairs(slots) do
     if s.empty then
       free = free + 1
-    else
-      local unit = Ranking.UnitValue(s, opts.auctionPrice) or 0
-      local c = {}
-      for k, v in pairs(s) do c[k] = v end
-      c.unitValue = unit
-      c.value = unit * (s.count or 1)
-      all[#all + 1] = c
+    elseif not Ranking.Excluded(s, opts) then
+      local unit = Ranking.UnitValue(s, opts.auctionPrice)
+      if unit then
+        local c = {}
+        for k, v in pairs(s) do c[k] = v end
+        c.unitValue = unit
+        c.value = unit * (s.count or 1)
+        all[#all + 1] = c
+      end
     end
   end
   table.sort(all, function(a, b)

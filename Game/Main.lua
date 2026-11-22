@@ -28,7 +28,8 @@ events:SetScript("OnEvent", function(_, event, arg1)
     if arg1 ~= addonName then return end
     if type(JunkAwayDB) ~= "table" then JunkAwayDB = {} end
     ns.db = JunkAwayDB
-    ns.settings = {}
+    ns.db.settings = ns.Settings.Normalize(ns.db.settings)
+    ns.settings = ns.db.settings
   elseif event == "BAG_UPDATE_DELAYED" then
     queueRefresh()
   elseif event == "GET_ITEM_INFO_RECEIVED" then
