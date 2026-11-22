@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,10 +16,10 @@ A settings page in the AddOns options with the quality limit and warn-at thresho
 
 ## Acceptance criteria
 
-- [ ] Settings panel registered with the game's Settings UI; `/ja options` opens it
-- [ ] Changing a setting re-ranks immediately
-- [ ] `/ja debug` stores a report in JunkAwayDB
-- [ ] Smoke test opens the panel and runs debug
+- [x] Settings panel registered with the game's Settings UI; `/ja options` opens it
+- [x] Changing a setting re-ranks immediately
+- [x] `/ja debug` stores a report in JunkAwayDB
+- [x] Smoke test opens the panel and runs debug
 
 ## Blocked by
 

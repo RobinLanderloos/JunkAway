@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,10 +16,10 @@ Slots without any price, quest items and items at or above the quality limit (se
 
 ## Acceptance criteria
 
-- [ ] Unpriced items are excluded, not valued at 0
-- [ ] Quest class (12) excluded even with a vendor price
-- [ ] Quality >= limit excluded; limit stored in settings and normalized
-- [ ] Tests cover each rule
+- [x] Unpriced items are excluded, not valued at 0
+- [x] Quest class (12) excluded even with a vendor price
+- [x] Quality >= limit excluded; limit stored in settings and normalized
+- [x] Tests cover each rule
 
 ## Blocked by
 

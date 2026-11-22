@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,11 +16,11 @@ Each row has an Ignore button; ignored item IDs (account-wide) never come up. Th
 
 ## Acceptance criteria
 
-- [ ] Ignore button removes all stacks of that item ID from the suggestions immediately
-- [ ] Ignored mode lists ignored items by name with Remove
-- [ ] Slash ignore/unignore accept item links and IDs
-- [ ] Ignore list stored in the account-wide saved variables
-- [ ] Unit tests for IgnoreList and ranking exclusion; smoke test clicks Ignore
+- [x] Ignore button removes all stacks of that item ID from the suggestions immediately
+- [x] Ignored mode lists ignored items by name with Remove
+- [x] Slash ignore/unignore accept item links and IDs
+- [x] Ignore list stored in the account-wide saved variables
+- [x] Unit tests for IgnoreList and ranking exclusion; smoke test clicks Ignore
 
 ## Blocked by
 

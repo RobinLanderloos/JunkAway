@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,12 +16,12 @@ Addon skeleton end to end: .toc, Locales, Core ranking on vendor prices, Game ad
 
 ## Acceptance criteria
 
-- [ ] Ranking returns slots ordered by value (vendor price x count), cheapest first, top 3, stable on ties
-- [ ] Empty slots are counted as free and never candidates
-- [ ] `/ja` opens the window with the three cheapest slots; empty-state text when nothing qualifies
-- [ ] Row click calls the container pick-up for that bag/slot; hovering a row shows the item tooltip
-- [ ] Window is skinned, movable, remembers its position, closes with Escape
-- [ ] `luajit tests/run.lua` and `luajit tests/smoke_test.lua` pass
+- [x] Ranking returns slots ordered by value (vendor price x count), cheapest first, top 3, stable on ties
+- [x] Empty slots are counted as free and never candidates
+- [x] `/ja` opens the window with the three cheapest slots; empty-state text when nothing qualifies
+- [x] Row click calls the container pick-up for that bag/slot; hovering a row shows the item tooltip
+- [x] Window is skinned, movable, remembers its position, closes with Escape
+- [x] `luajit tests/run.lua` and `luajit tests/smoke_test.lua` pass
 
 ## Blocked by
 

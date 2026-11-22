@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,12 +16,12 @@ Watch bag changes; when the ordinary bags go from not full to full (free ordinar
 
 ## Acceptance criteria
 
-- [ ] Special-bag slots (family ~= 0) excluded from free count and candidates
-- [ ] Window opens on the not-full -> full transition only
-- [ ] Auto-opened window closes when a slot frees up
-- [ ] warnAt setting normalized (0-5)
-- [ ] In combat the open is deferred to PLAYER_REGEN_ENABLED
-- [ ] Tests for full/warnAt/special bags; smoke test fires BAG_UPDATE_DELAYED
+- [x] Special-bag slots (family ~= 0) excluded from free count and candidates
+- [x] Window opens on the not-full -> full transition only
+- [x] Auto-opened window closes when a slot frees up
+- [x] warnAt setting normalized (0-5)
+- [x] In combat the open is deferred to PLAYER_REGEN_ENABLED
+- [x] Tests for full/warnAt/special bags; smoke test fires BAG_UPDATE_DELAYED
 
 ## Blocked by
 

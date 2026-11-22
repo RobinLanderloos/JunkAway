@@ -8,7 +8,7 @@ docs/prd/junkaway-v1.md
 
 ## State
 
-Open
+Completed
 
 ## What to build
 
@@ -16,10 +16,10 @@ Stackable candidates get their own colour/mark (ADR 0001). When two partial stac
 
 ## Acceptance criteria
 
-- [ ] Candidates carry `stackable` (max stack > 1) and the row shows the stack mark
-- [ ] Merge detection: same item ID, both below max stack, ordinary bags, not locked; smaller onto larger
-- [ ] Merge row label 'Merge <name> (a + b)' and a Merge button doing pick-up + drop
-- [ ] Tests for merge detection and label
+- [x] Candidates carry `stackable` (max stack > 1) and the row shows the stack mark
+- [x] Merge detection: same item ID, both below max stack, ordinary bags, not locked; smaller onto larger
+- [x] Merge row label 'Merge <name> (a + b)' and a Merge button doing pick-up + drop
+- [x] Tests for merge detection and label
 
 ## Blocked by
 
